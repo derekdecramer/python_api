@@ -8,8 +8,8 @@ from .config import settings
 # no longer necessary since alembic handles this now
 # models.Base.metadata.create_all(bind=engine)
 
-# origins = ["*"] and anyone can use it
-origins = ["https://www.google.com"]
+origins = ["*"] # and anyone can use it
+# origins = ["https://www.google.com"]
 
 app = FastAPI()
 app.add_middleware(
@@ -27,4 +27,4 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "welcome to my api"}
+    return {"message": "Hello World"}
