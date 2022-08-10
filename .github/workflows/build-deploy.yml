@@ -68,6 +68,7 @@ jobs:
     needs: [build]
     environment:
       name: PRODUCTION
+    runs-on: ubuntu-latest
     steps:
       - name: pulling git repo
         uses: actions/checkout@v2
