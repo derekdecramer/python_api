@@ -55,3 +55,13 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: conint(le=1)
+
+class UserRegister(BaseModel):
+    id: str
+    email: EmailStr
+    created_at: datetime
+    access_token: str
+    token_type: str
+    
+    class Config:
+        orm_mode=True

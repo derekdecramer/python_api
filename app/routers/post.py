@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.get("/", response_model=List[schemas.PostOut])
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
-limit: int = 10, offset: int = 0, search: Optional[str] = ""):
+limit: int = 10, offset: int = 0, self: bool = False, search: Optional[str] = ""):
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
 
@@ -21,8 +21,10 @@ limit: int = 10, offset: int = 0, search: Optional[str] = ""):
     # .filter(
     #     models.Post.owner_id == current_user.id
     # )
-
-    results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Post.id == models.Vote.post_id, isouter=True).group_by(models.Post.id).order_by(desc(func.count(models.Vote.post_id))).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
+    if self == True:
+        results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Post.id == models.Vote.post_id, isouter=True).group_by(models.Post.id).order_by(desc(func.count(models.Vote.post_id))).filter(models.Post.title.contains(search)).filter(models.Post.owner_id == current_user.id).limit(limit).offset(offset).all()
+    else:
+        results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Post.id == models.Vote.post_id, isouter=True).group_by(models.Post.id).order_by(desc(func.count(models.Vote.post_id))).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
     print(results)
     
     return results
