@@ -2,7 +2,7 @@ name: Build and Deploy Code
 
 on: 
   push:
-    branches: ["master", "develop"]
+    branches: ["master"]
 # each job starts from scratch, might even be on different machines
 jobs:
   build:
@@ -78,3 +78,16 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "python-api-42219" #Must be unique in Heroku
           heroku_email: "ddecramer@wisc.edu"
+
+      - name: Deploy to ubuntu server
+        uses: appleboy/ssh-action@master
+        with: 
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd app/src
+            git pull origin master
+            echo ${{secrets.PASSWORD}} | sudo -S systemctl restart python_api
+
+
