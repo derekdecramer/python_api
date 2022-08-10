@@ -3,8 +3,9 @@ name: Build and Deploy Code
 on: 
   push:
     branches: ["master", "develop"]
+# each job starts from scratch, might even be on different machines
 jobs:
-  job1:
+  build:
     environment:
       name: TESTING
     env:
@@ -63,3 +64,16 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/python_api:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/python_api:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/python_api:buildcache,mode=max
+  deploy:
+    needs: [build]
+    environment:
+      name: PRODUCTION
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v2
+      - name: Deploying to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "python-api-42219" #Must be unique in Heroku
+          heroku_email: "ddecramer@wisc.edu"
